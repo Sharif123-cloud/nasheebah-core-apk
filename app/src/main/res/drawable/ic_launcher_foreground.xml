@@ -4,19 +4,12 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- School building - white, centered for adaptive safe zone -->
     <path android:fillColor="#FFFFFF"
         android:pathData="M54,28 L74,40 L74,80 L62,80 L62,64 L46,64 L46,80 L34,80 L34,40 Z"/>
-    <!-- Door -->
     <path android:fillColor="#007AFF"
         android:pathData="M46,64 L62,64 L62,80 L46,80 Z"/>
-    <!-- Windows -->
     <path android:fillColor="#007AFF"
         android:pathData="M38,46 L44,46 L44,56 L38,56 Z M64,46 L70,46 L70,56 L64,56 Z"/>
-    <!-- Flag pole -->
-    <path android:fillColor="#FFFFFF" android:strokeColor="#FFFFFF" android:strokeWidth="2"
-        android:pathData="M54,18 L54,30"/>
-    <!-- Flag -->
     <path android:fillColor="#34C759"
         android:pathData="M54,18 L66,22 L54,26 Z"/>
 </vector>
