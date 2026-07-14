@@ -31,23 +31,20 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: 'gradle'
 
-      # ── 3. Gradle wrapper JAR ───────────────────────────────────
-      - name: Download Gradle Wrapper JAR
+      # ── 3. Set ANDROID_HOME from runner env ─────────────────────
+      - name: Set ANDROID_HOME
         run: |
-          mkdir -p gradle/wrapper
-          curl -fL "https://github.com/gradle/gradle/raw/v8.4.0/gradle/wrapper/gradle-wrapper.jar" \
-            -o gradle/wrapper/gradle-wrapper.jar 2>/dev/null || \
-          curl -fL "https://services.gradle.org/distributions/gradle-8.4-bin.zip" \
-            -o /tmp/gradle-8.4.zip && \
-          unzip -p /tmp/gradle-8.4.zip "gradle-8.4/lib/gradle-wrapper.jar" \
-            > gradle/wrapper/gradle-wrapper.jar 2>/dev/null || true
-          ls -lh gradle/wrapper/
+          echo "ANDROID_HOME=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
+          echo "Android SDK at: $ANDROID_SDK_ROOT"
+          ls $ANDROID_SDK_ROOT/build-tools/ || true
 
-      # ── 4. Make gradlew executable ──────────────────────────────
-      - name: Make gradlew Executable
-        run: chmod +x ./gradlew
+      # ── 4. Install Gradle 8.4 (no wrapper JAR needed) ──────────
+      - name: Setup Gradle 8.4
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.4'
+          cache-read-only: false
 
       # ── 5. Cache Gradle dependencies ────────────────────────────
       - name: Cache Gradle packages
@@ -63,23 +60,23 @@ jobs:
       # ── 6. Build Debug APK ──────────────────────────────────────
       - name: Build Debug APK
         if: github.event.inputs.build_type != 'release'
-        run: ./gradlew assembleDebug --no-daemon --stacktrace
+        run: gradle assembleDebug --no-daemon --stacktrace
         env:
-          ANDROID_HOME: ${{ env.ANDROID_SDK_ROOT }}
+          ANDROID_HOME: ${{ env.ANDROID_HOME }}
 
       # ── 7. Build Release APK (unsigned) ─────────────────────────
       - name: Build Release APK
         if: github.event.inputs.build_type == 'release'
-        run: ./gradlew assembleRelease --no-daemon --stacktrace
+        run: gradle assembleRelease --no-daemon --stacktrace
         env:
-          ANDROID_HOME: ${{ env.ANDROID_SDK_ROOT }}
+          ANDROID_HOME: ${{ env.ANDROID_HOME }}
 
-      # ── 8. List APK outputs ─────────────────────────────────────
+      # ── 8. List outputs ─────────────────────────────────────────
       - name: List Build Outputs
         run: find app/build/outputs/apk -name "*.apk" -exec ls -lh {} \;
 
       # ── 9. Upload Debug APK ─────────────────────────────────────
-      - name: Upload Debug APK Artifact
+      - name: Upload Debug APK
         if: github.event.inputs.build_type != 'release'
         uses: actions/upload-artifact@v4
         with:
@@ -88,7 +85,7 @@ jobs:
           retention-days: 30
 
       # ── 10. Upload Release APK ───────────────────────────────────
-      - name: Upload Release APK Artifact
+      - name: Upload Release APK
         if: github.event.inputs.build_type == 'release'
         uses: actions/upload-artifact@v4
         with:
@@ -98,16 +95,13 @@ jobs:
 
       # ── 11. Summary ──────────────────────────────────────────────
       - name: Build Summary
+        if: always()
         run: |
-          echo "## ✅ Nasheebah Core Build Complete" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Nasheebah Core Build" >> $GITHUB_STEP_SUMMARY
           echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|-------|-------|" >> $GITHUB_STEP_SUMMARY
           echo "| App | Nasheebah Core v2.0 |" >> $GITHUB_STEP_SUMMARY
           echo "| Build # | ${{ github.run_number }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Commit | ${{ github.sha }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Branch | ${{ github.ref_name }} |" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "📦 Download the APK from the **Artifacts** section above." >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Engineered by **Sserunjogi Sharif** 📞 +256787816686" >> $GITHUB_STEP_SUMMARY
+          echo "📦 Download the APK from the **Artifacts** section." >> $GITHUB_STEP_SUMMARY
+          echo "Engineered by **Sserunjogi Sharif** +256787816686" >> $GITHUB_STEP_SUMMARY
