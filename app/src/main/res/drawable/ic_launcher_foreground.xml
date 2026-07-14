@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- School building icon -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,20 L80,36 L80,84 L60,84 L60,64 L48,64 L48,84 L28,84 L28,36 Z" />
+    <!-- Door -->
+    <path
+        android:fillColor="#007AFF"
+        android:pathData="M48,64 L60,64 L60,84 L48,84 Z" />
+    <!-- Windows -->
+    <path
+        android:fillColor="#007AFF"
+        android:pathData="M35,44 L45,44 L45,56 L35,56 Z M63,44 L73,44 L73,56 L63,56 Z" />
+    <!-- Roof flag -->
+    <path
+        android:fillColor="#34C759"
+        android:pathData="M54,12 L54,22 L62,17 Z" />
+</vector>
